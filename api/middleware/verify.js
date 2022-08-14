@@ -11,8 +11,8 @@ async function verifyToken(req,res,next) {
         req.token =  verify
         next()
     } catch (error) {
-        return res.status(301).json({
-            message:'Auth failed'
+        return res.status(401).json({
+            message:'Authentication failed'
         })
     }
 }
