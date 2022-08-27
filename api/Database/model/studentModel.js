@@ -20,6 +20,7 @@ const studentSchema = new mongoose.Schema(
 			organization: { type: String },
 			startDate: { type: Date },
 			position: { type: String },
+			yearsExperience: { type: String },
 			location: { type: String },
 		},
 
