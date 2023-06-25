@@ -1,13 +1,40 @@
-const {Login,Register} = require('./Admin-controller/adminController');
-const { getAllserialNumber,generateSerialNumber,updateSerialNumber} = require('./serialNumber-Controller/serialNumberController')
+const { Login, Register } = require("./Admin-controller/adminController");
+const {
+	getAllserialNumber,
+	generateSerialNumber,
+	getTotalSerialNumberCount,
+	updateSerialNumber,
+} = require("./serialNumber-Controller/serialNumberController");
 
-const  {
-    getAllStudent,getRecentStudent,getStudentById,studentRegistration,deleteStudent
-}  = require("./student-controller/studentController");
+const {
+	getAllStudent,
+	getRecentStudent,
+	getTotalStudentCount,
+	getStudentById,
+	studentRegistration,
+	deleteStudent,
+} = require("./student-controller/studentController");
 
-
-
+const {
+	getAllImages,
+	uploadImage,
+	deleteImage,
+} = require("./gallery-controller/galleryController");
 
 module.exports = {
-    Login,Register, getAllStudent,getStudentById,studentRegistration,deleteStudent, getAllserialNumber,generateSerialNumber,updateSerialNumber,getRecentStudent
-}
+	Login,
+	Register,
+	getTotalStudentCount,
+	getAllStudent,
+	getStudentById,
+	studentRegistration,
+	deleteStudent,
+	getAllserialNumber,
+	getTotalSerialNumberCount,
+	generateSerialNumber,
+	updateSerialNumber,
+	getRecentStudent,
+	getAllImages,
+	uploadImage,
+	deleteImage,
+};

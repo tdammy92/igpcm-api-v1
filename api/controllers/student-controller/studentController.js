@@ -1,6 +1,6 @@
 const studentModel = require("../../Database/model/studentModel");
-
 const serialNumberModel = require("../../Database/model/serialnumberModel");
+const cloudinary = require("../../utils/cloudinary");
 
 // get all student route
 async function getAllStudent(req, res) {
@@ -21,17 +21,12 @@ async function getAllStudent(req, res) {
 		});
 	}
 }
-
-
-
 // get all student route
 async function getRecentStudent(req, res) {
-
 	try {
 		// const response = await  studentModel.find({}).populate('user');
 		const response = await studentModel.find({});
-
-		const recent = response?.reverse().slice(0,5)
+		const recent = response?.reverse().slice(0, 5);
 
 		return res.send(recent);
 	} catch (error) {
@@ -41,24 +36,44 @@ async function getRecentStudent(req, res) {
 	}
 }
 
+// get total student count
+async function getTotalStudentCount(req, res) {
+	try {
+		// const response = await  studentModel.find({}).populate('user');
+		const response = await studentModel.estimatedDocumentCount();
+
+		if (response) {
+			return res.status(200).json({
+				count: response,
+			});
+		} else {
+			return res.status(401).json({
+				Count: Nil,
+			});
+		}
+	} catch (error) {
+		return res.status(500).json({
+			message: "Somthing went wrong",
+		});
+	}
+}
+
 //get student by Id
 
-
-async function getStudentById(req,res) {
+async function getStudentById(req, res) {
 	const id = req.params.id;
 
 	try {
 		studentModel.findById(id, function (err, student) {
-
 			if (err) {
 				return res.status(400).json({
 					status: "failure",
 					message: "Somthing went wrong",
 				});
-			}else{
+			} else {
 				return res.send(student);
 			}
-		})
+		});
 	} catch (error) {
 		console.log({ error });
 		return res.status(400).json({
@@ -66,61 +81,125 @@ async function getStudentById(req,res) {
 			message: "Somthing went wrong",
 		});
 	}
-	
 }
-
-
 
 async function studentRegistration(req, res) {
 	const payload = req.body;
 
+	// const { image_data, documents, ...rest } = payload;
+
+	// console.log("full payload from front end", JSON.stringify(rest, null, 2));
+
 	try {
-		const newStudent = new studentModel(payload);
+		const passport = payload?.image_data;
 
-		newStudent.save((err, result) => {
-			if (err) {
-				console.log(err);
-				return res.status(400).json({
-					status: "failed",
-					message: err,
-					// message:"User already exist"
-				});
-			}
+		//check if passport was included in the object
+		if (!passport || passport === "")
+			return res
+				.status(404)
+				.json({ status: "failed", message: "Please attache a passport" });
 
-			if (result) {
-				serialNumberModel.updateOne(
-					{ _id: result?.serialNumber },
-					{ isValid: false, user: result?._id ,dateUsed:Date.now()},
-					(err, temp) => {
-						if (err) {
-							return res.status(404).json(err);
-						}else{
-                            return res.status(201).json(result);
-                        }
-
-                    
-					}
-				);
-				// return res.status(201).json(result);
-			}
+		//upload passport
+		const uploadPassport = await cloudinary.uploader.upload(passport, {
+			upload_preset: "igpcm_passport",
 		});
 
-		// .then((createdStudent) => {
+		//check if password was uploaded successfully
+		if (!uploadPassport)
+			return res
+				.status(404)
+				.json({ status: "failed", message: "Form could not be uploaded" });
 
-		//         res.json({
-		//             data: createdStudent,
-		//         });
-		//     })
-		//     .catch((err=>{
+		const heigestQualification = payload?.documents?.higestQualification?.file;
+		const heigestQualificationFileName =
+			payload?.documents?.higestQualification?.name;
 
-		//         if (err.code===11000) {
-		//             return res.status(400).json({
-		//                 status:'failed',
-		//                 message:"User already exist"
-		//                })
+		const jamb = payload?.documents?.jamb?.file;
+		const jambFileName = payload?.documents?.jamb?.name;
 
-		//         }
-		//     }));
+		let JambQ = null;
+		let highestQ = null;
+
+		if (jamb) {
+			const jambQualification = await cloudinary.uploader.upload(jamb, {
+				upload_preset: "igpcm_document",
+			});
+
+			if (jambQualification) {
+				JambQ = jambQualification;
+			}
+		}
+
+		if (heigestQualification) {
+			const uploadHighestQualification = await cloudinary.uploader.upload(
+				heigestQualification,
+				{
+					upload_preset: "igpcm_document",
+				}
+			);
+
+			if (uploadHighestQualification) {
+				highestQ = uploadHighestQualification;
+			}
+		}
+
+		//upload  documents
+
+		const newPayload = {
+			passport: uploadPassport,
+			title: payload?.title,
+			surname: payload?.surname,
+			firstName: payload?.firstName,
+			middleName: payload?.middleName,
+			gender: payload?.gender,
+			dob: payload?.dob,
+			phoneNumber: payload?.phoneNumber,
+			email: payload?.email,
+			country: payload?.country,
+			state: payload.state,
+			eduQualification: payload.eduQualification,
+			currentEmploymet: payload?.currentEmploymet,
+			membershipCadre: payload?.membershipCadre,
+			membershipRoute: payload?.memberRoute,
+			applicationFee: payload.applicationFee,
+			paymentMethods: payload?.paymentMethods,
+			academicPrograms: payload?.academicPrograms,
+			serialNumber: payload?.serialNumber,
+			documents: [
+				...(highestQ
+					? [{ name: heigestQualificationFileName, file: highestQ }]
+					: []),
+				...(JambQ ? [{ name: jambFileName, file: JambQ }] : []),
+			],
+		};
+
+		// return res.status(201).json(newPayload);
+		//submit form
+		const newStudent = new studentModel(newPayload);
+
+		const newRegistration = await newStudent.save();
+
+		// console.log(
+		// 	"payload  after registration",
+		// 	JSON.stringify(newRegistration, null, 2)
+		// );
+
+		if (!newRegistration)
+			return res
+				.status(404)
+				.json({ status: "failed", message: "Form could not be Submitted" });
+
+		const updatedSerialNumb = await serialNumberModel.updateOne(
+			{ _id: newRegistration?.serialNumber },
+			{ isValid: false, user: newRegistration?._id, dateUsed: Date.now() }
+		);
+
+		if (!updatedSerialNumb)
+			return res
+				.status(404)
+				.json({ status: "failed", message: "Form could not be Submitted" });
+
+		return res.status(201).json(newRegistration);
 	} catch (error) {
 		console.log({ error });
 		return res.status(400).json({
@@ -129,8 +208,6 @@ async function studentRegistration(req, res) {
 		});
 	}
 }
-
-
 
 //delete student controller
 async function deleteStudent(req, res) {
@@ -153,6 +230,7 @@ async function deleteStudent(req, res) {
 module.exports = {
 	getAllStudent,
 	getRecentStudent,
+	getTotalStudentCount,
 	getStudentById,
 	studentRegistration,
 	deleteStudent,
