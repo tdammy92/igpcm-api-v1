@@ -3,40 +3,51 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const adminModel = require("../../Database/model/adminModel");
 
-
-
 //admin login controller
 async function Login(req, res) {
 	//verify email and password;
-	const admin = await adminModel.findOne({ email: req.body.email });
 
-	if (!admin) return res.status(404).send("Invalid email address");
+	try {
+		const admin = await adminModel.findOne({ email: req.body.email });
 
-	//verify password
-	const verifyPassword = await bcrypt.compare(req.body.password, admin.password);
-	if (verifyPassword === false) return res.status(304).send("Invalid password");
+		if (!admin) return res.status(404).send("Invalid email address");
 
-	const token = await jwt.sign({ _id: admin._id }, process.env.JWT_SECRET_KEY);
+		//verify password
+		const verifyPassword = await bcrypt.compare(
+			req.body.password,
+			admin.password
+		);
+		if (verifyPassword === false)
+			return res.status(304).send("Invalid password");
 
-	admin.password = undefined;
+		const token = await jwt.sign(
+			{ _id: admin._id },
+			process.env.JWT_SECRET_KEY
+		);
 
-	//send back  userDetails after login
+		admin.password = undefined;
 
-	return res.status(200).send({
-		data: {
-			...admin,
-		},
+		//send back  userDetails after login
 
-		token,
-	});
+		return res.status(200).send({
+			data: {
+				...admin,
+			},
+
+			token,
+		});
+	} catch (error) {
+		console.log("error Login: " + error);
+		return res.status(500).send({
+			message: error,
+		});
+	}
 }
-
-
 
 //admin register controller
 async function Register(req, res) {
 	//creating a validation schema for Joi to validate
-console.log(req.body);
+	console.log(req.body);
 	const schema = Joi.object({
 		username: Joi.string().min(5).max(8).required(),
 		email: Joi.string().email().required(),
@@ -75,6 +86,5 @@ console.log(req.body);
 			return res.status(500).send(err);
 		});
 }
-
 
 module.exports = { Login, Register };
