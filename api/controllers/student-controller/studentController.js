@@ -208,30 +208,37 @@ async function deleteStudent(req, res) {
   const Id = req.params.id;
   const { mongoStudentId, cloudinaryPublicIds } = req?.body;
 
-  //   console.log(JSON.stringify({ mongoStudentId, cloudinaryPublicIds }, null, 2));
+  try {
+    const deletedImages = await cloudinary.api.delete_resources(
+      cloudinaryPublicIds,
+      function (error, result) {
+        console.log(result, error);
+      }
+    );
+    //remove the image from MongoDB
+    const deleteResponse = await studentModel.findOneAndDelete({
+      _id: mongoStudentId,
+    });
 
-  const deletedImages = await cloudinary.api.delete_resources(
-    cloudinaryPublicIds,
-    function (error, result) {
-      console.log(result, error);
+    if (!deleteResponse?._id?.toString()) {
+      return res.status(404).json({
+        message: "student could not be deleted",
+        error: error,
+      });
     }
-  );
-  //remove the image from MongoDB
-  const deleteResponse = await studentModel.findOneAndDelete({
-    _id: mongoStudentId,
-  });
 
-  if (!deleteResponse?._id?.toString()) {
-    return res.status(404).json({
-      message: "student could not be deleted",
-      error: error,
+    return res.status(200).json({
+      data: deleteResponse,
+      message: "student deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message:
+        typeof error === "string"
+          ? error
+          : error?.message ?? "Invalid Serial Number",
     });
   }
-
-  return res.status(200).json({
-    data: deleteResponse,
-    message: "student deleted successfully",
-  });
 
   //   studentModel.findByIdAndDelete(Id, (err, newStudent) => {
   //     if (err) {
