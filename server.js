@@ -11,6 +11,7 @@ const {
   studentRouter,
   serialNumberRoute,
   galleryRouter,
+  examRouter,
 } = require("./api/routes");
 
 require("./api/Database/DB");
@@ -34,6 +35,7 @@ server.use("/api/auth", adminRouter);
 server.use("/api/student", studentRouter);
 server.use("/api/serial", serialNumberRoute);
 server.use("/api/gallery", galleryRouter);
+server.use("/api/exams", examRouter);
 
 server.listen(port, () => {
   // console.log("APP ENVIREMOENT", process.argv);
