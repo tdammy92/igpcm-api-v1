@@ -28,7 +28,7 @@ server.use(express.json({ limit: "50mb" }));
 // server.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 server.get("/api", (req, res) => {
-  res.send("welocme to igpcm api/v1");
+  res.send("welcome to igpcm api/v1");
 });
 
 server.use("/api/auth", adminRouter);

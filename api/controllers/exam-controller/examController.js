@@ -2,9 +2,12 @@ const examModel = require("../../Database/model/examsModel");
 
 // get all exams
 async function getAllExams(req, res) {
-  console.log("exam got called");
+  const type = req.query?.type;
+
+  console.log("get exam type", type);
   try {
-    const response = await examModel.find();
+    // console.log("Exam is populated", examModel.populated("Admin"));
+    const response = await examModel.find({}).populate("Admin");
     //filter out answers, send only question to front end
     const exams = response?.map((exam) => ({
       exam_uuid: exam._id,
@@ -12,6 +15,7 @@ async function getAllExams(req, res) {
       duration: exam.duration,
       createdAt: exam.updatedAt,
       updatedAt: exam.updatedAt,
+      ...(type === "full" && { uploadedBy: exam.uploadedBy }),
       questions: exam?.questions?.map((qty) => {
         return {
           question: qty.question,
@@ -35,49 +39,22 @@ async function getAllExams(req, res) {
 
 //upload exams
 async function uploadExams(req, res) {
-  //   console.log("uploading exams");
-
-  //   const newExam = {
-  //     examName: "WASH QUESTION_103335",
-  //     duration: 50,
-  //     questions: [
-  //       {
-  //         question:
-  //           "What are the four most important human needs in an emergency?",
-  //         options: [
-  //           "Money, electricity, freedom and health",
-  //           "Water, sanitation, food and shelter",
-  //           "Air, sleep, water and nutrition",
-  //           "Transportation, communication, clothing and food",
-  //         ],
-  //         answer: "Water, sanitation, food and shelter",
-  //       },
-  //       {
-  //         question:
-  //           "What is a potential outcome of a lack of access to basic water and sanitation services?",
-  //         options: [
-  //           "Increase in food production",
-  //           "Water, sanitation, food and shelter",
-  //           "Increase in economic growth",
-  //           "Reduction in poverty",
-  //           "Children are more susceptible to illness and death from diseases",
-  //         ],
-  //         answer:
-  //           "Children are more susceptible to illness and death from diseases",
-  //       },
-  //     ],
-  //   };
+  const payload = await req.body;
 
   try {
-    // const exam = new examModel(newExam);
+    const exam = new examModel(payload);
+    const response = await exam.save();
 
-    // const result = await exam.save();
+    if (!response) {
+      throw new Error("exam could'nt be uploaded");
+    }
+
     return res.status(201).json({
-      data: [],
+      data: response,
     });
   } catch (error) {
     return res.status(500).json({
-      message: "Something went wrong from catch",
+      message: "Something went wrong from upload exams",
       error: error,
     });
   }

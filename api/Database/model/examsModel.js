@@ -6,15 +6,20 @@ const examSchema = new mongoose.Schema(
     duration: { type: Number, required: true },
     questions: [
       {
+        qstNumber: { type: Number },
         question: { type: String, required: true },
         options: [String],
         answer: { type: String, required: true },
       },
     ],
+    uploadedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Admin",
+    },
   },
   { timestamps: true }
 );
 
-const ExamModel = mongoose.model("Exam", examSchema);
+const examModel = mongoose.model("Exam", examSchema);
 
-module.exports = ExamModel;
+module.exports = examModel;
