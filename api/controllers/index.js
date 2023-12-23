@@ -27,6 +27,13 @@ const {
   deleteExams,
 } = require("./exam-controller/examController");
 
+const {
+  getResults,
+  getResult,
+  UploadResult,
+  deleteResult,
+} = require("./result-controller/resultController");
+
 module.exports = {
   Login,
   Register,
@@ -46,4 +53,8 @@ module.exports = {
   getAllExams,
   uploadExams,
   deleteExams,
+  getResults,
+  getResult,
+  UploadResult,
+  deleteResult,
 };

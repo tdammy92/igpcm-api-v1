@@ -4,10 +4,12 @@ const examModel = require("../../Database/model/examsModel");
 async function getAllExams(req, res) {
   const type = req.query?.type;
 
-  console.log("get exam type", type);
   try {
     // console.log("Exam is populated", examModel.populated("Admin"));
-    const response = await examModel.find({}).populate("Admin");
+    const response = await examModel
+      .find({})
+      .populate({ path: "uploadedBy", select: ["email", "username"] })
+      .sort({ createdAt: -1 });
     //filter out answers, send only question to front end
     const exams = response?.map((exam) => ({
       exam_uuid: exam._id,
@@ -25,11 +27,9 @@ async function getAllExams(req, res) {
       }),
     }));
 
-    console.log("List of all exams", JSON.stringify(exams, null, 3));
+    // console.log("List of all exams", JSON.stringify(exams, null, 3));ß
 
-    return res.status(200).json({
-      exams,
-    });
+    return res.status(200).json(exams);
   } catch (error) {
     return res.status(500).json({
       message: error,
@@ -63,7 +63,13 @@ async function uploadExams(req, res) {
 //delete an exam
 async function deleteExams(req, res) {
   console.log("deleting exams");
+
+  const ExamId = req.body.examId;
   try {
+    //remove the image from MongoDB
+    const deleteResponse = await examModel.findOneAndDelete({
+      _id: ExamId,
+    });
     return res.status(201).json({
       data: "Exam deleted",
     });

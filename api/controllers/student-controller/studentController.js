@@ -8,16 +8,17 @@ async function getAllStudent(req, res) {
 
   try {
     // const response = await  studentModel.find({}).populate('user');
-    const response = await studentModel.find({});
+    const response = await studentModel.find({}).sort({ createdAt: -1 });
 
     // const notes = response.map((note)=>{
     // 	return {...note,user:{password:undefined,token:undefined}}
     // })
 
-    return res.send(response?.reverse());
+    return res.send(response);
   } catch (error) {
     return res.status(500).json({
       message: "Somthing went wrong",
+      error: error,
     });
   }
 }
@@ -25,8 +26,8 @@ async function getAllStudent(req, res) {
 async function getRecentStudent(req, res) {
   try {
     // const response = await  studentModel.find({}).populate('user');
-    const response = await studentModel.find({});
-    const recent = response?.reverse().slice(0, 5);
+    const response = await studentModel.find({}).sort({ createdAt: -1 });
+    const recent = response?.slice(0, 5);
 
     return res.send(recent);
   } catch (error) {
@@ -64,16 +65,16 @@ async function getStudentById(req, res) {
   const id = req.params.id;
 
   try {
-    studentModel.findById(id, function (err, student) {
-      if (err) {
-        return res.status(400).json({
-          status: "failure",
-          message: "Somthing went wrong",
-        });
-      } else {
-        return res.send(student);
-      }
-    });
+    const response = await studentModel.findById(id);
+
+    if (response) {
+      return res.send(response);
+    } else {
+      return res.status(400).json({
+        status: "failure",
+        message: "Somthing went wrong",
+      });
+    }
   } catch (error) {
     console.log({ error });
     return res.status(400).json({
@@ -205,7 +206,6 @@ async function studentRegistration(req, res) {
 
 //delete student controller
 async function deleteStudent(req, res) {
-  const Id = req.params.id;
   const { mongoStudentId, cloudinaryPublicIds } = req?.body;
 
   try {
