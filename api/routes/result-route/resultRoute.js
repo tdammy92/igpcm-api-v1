@@ -14,7 +14,7 @@ resultRouter.get("/", verifyToken, getResults);
 //get one results
 resultRouter.get("/:id", verifyToken, getResult);
 
-//get result by Id
+//post/submit result by Id
 resultRouter.post("/upload", UploadResult);
 
 //delete result by Id

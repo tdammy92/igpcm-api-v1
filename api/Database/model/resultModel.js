@@ -4,6 +4,7 @@ const resultSchema = new mongoose.Schema(
   {
     total_score: { type: Number, required: true },
     total_answered: { type: Number },
+    pass: { type: Boolean },
     correct_answers: { type: Number, required: true },
     exam: {
       type: mongoose.Schema.Types.ObjectId,

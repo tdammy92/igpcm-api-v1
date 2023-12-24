@@ -4,15 +4,21 @@ const resultModel = require("../../Database/model/resultModel");
 async function getResults(req, res) {
   const type = req.query?.type;
 
+  console.log("i was called");
+
   try {
     const response = await resultModel
       .find({})
-      .populate({ path: "uploadedBy", select: ["email", "username"] })
+      .populate({ path: "exam", select: ["examName", "duration"] })
+      .populate({
+        path: "student",
+        select: ["title", "surname", "firstName", "middleName", "gender"],
+      })
       .sort({ createdAt: -1 });
 
     console.log("List of all results", JSON.stringify(response, null, 3));
 
-    return res.status(200).json(exams);
+    return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
       message: error,

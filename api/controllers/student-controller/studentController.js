@@ -22,6 +22,7 @@ async function getAllStudent(req, res) {
     });
   }
 }
+
 // get all student route
 async function getRecentStudent(req, res) {
   try {
@@ -60,7 +61,6 @@ async function getTotalStudentCount(req, res) {
 }
 
 //get student by Id
-
 async function getStudentById(req, res) {
   const id = req.params.id;
 
