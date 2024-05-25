@@ -28,10 +28,10 @@ const {
 } = require("./exam-controller/examController");
 
 const {
-  getResults,
-  getResult,
+  getAllResults,
+  getResultById,
   UploadResult,
-  deleteResult,
+  deleteResultById,
 } = require("./result-controller/resultController");
 
 module.exports = {
@@ -53,8 +53,8 @@ module.exports = {
   getAllExams,
   uploadExams,
   deleteExams,
-  getResults,
-  getResult,
+  getAllResults,
+  getResultById,
   UploadResult,
-  deleteResult,
+  deleteResultById,
 };

@@ -4,6 +4,7 @@ const examSchema = new mongoose.Schema(
   {
     examName: { type: String, required: true, unique: true },
     duration: { type: Number, required: true },
+    totalQuestions: { type: Number },
     questions: [
       {
         qstNumber: { type: Number },

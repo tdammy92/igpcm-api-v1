@@ -1,10 +1,8 @@
 const resultModel = require("../../Database/model/resultModel");
 
 // get all results
-async function getResults(req, res) {
+async function getAllResults(req, res) {
   const type = req.query?.type;
-
-  console.log("i was called");
 
   try {
     const response = await resultModel
@@ -26,18 +24,37 @@ async function getResults(req, res) {
   }
 }
 // get result
-async function getResult(req, res) {
-  const type = req.query?.type;
+async function getResultById(req, res) {
+  // const type = req.query?.type;
+  const resultId = req.params.id;
+
+  // console.log("result ID", resultId);
 
   try {
     const response = await resultModel
-      .find({ _id: "" })
-      .populate({ path: "uploadedBy", select: ["email", "username"] })
-      .sort({ createdAt: -1 });
+      .findById(resultId)
+      .populate({
+        path: "exam",
+        select: ["examName", "duration", "totalQuestions"],
+      })
+      .populate({
+        path: "student",
+        select: [
+          "title",
+          "surname",
+          "firstName",
+          "middleName",
+          "gender",
+          "email",
+        ],
+      });
 
-    console.log("List of all results", JSON.stringify(response, null, 3));
+    // console.log("List  results", JSON.stringify(response, null, 3));
 
-    return res.status(200).json(exams);
+    if (!response) {
+      throw new Error("Somthing went wrong");
+    }
+    return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
       message: error,
@@ -69,10 +86,10 @@ async function UploadResult(req, res) {
 }
 
 //delete a result
-async function deleteResult(req, res) {
+async function deleteResultById(req, res) {
   console.log("deleting exams");
 
-  const ExamId = req.body.examId;
+  const ExamId = req.body?.examId;
   try {
     //remove the image from MongoDB
     const deleteResponse = await examModel.findOneAndDelete({
@@ -89,4 +106,9 @@ async function deleteResult(req, res) {
   }
 }
 
-module.exports = { getResults, getResult, UploadResult, deleteResult };
+module.exports = {
+  getAllResults,
+  getResultById,
+  UploadResult,
+  deleteResultById,
+};
