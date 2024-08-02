@@ -3,13 +3,14 @@ const examModel = require("../../Database/model/examsModel");
 // get all exams
 async function getAllExams(req, res) {
   const type = req.query?.type;
-
   try {
     // console.log("Exam is populated", examModel.populated("Admin"));
     const response = await examModel
       .find({})
       .populate({ path: "uploadedBy", select: ["email", "username"] })
       .sort({ createdAt: -1 });
+
+
     //filter out answers, send only question to front end
     const exams = response?.map((exam) => ({
       exam_uuid: exam._id,
@@ -27,7 +28,9 @@ async function getAllExams(req, res) {
       }),
     }));
 
-    // console.log("List of all exams", JSON.stringify(exams, null, 3));ß
+
+
+    // console.log("List of all exams", JSON.stringify(exams, null, 3));
 
     return res.status(200).json(exams);
   } catch (error) {

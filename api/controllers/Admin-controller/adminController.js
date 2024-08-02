@@ -18,7 +18,7 @@ async function Login(req, res) {
 			admin.password
 		);
 		if (verifyPassword === false)
-			return res.status(304).send("Invalid password");
+			return res.status(304).send({message:"Invalid password"});
 
 		const token = await jwt.sign(
 			{ _id: admin._id },
@@ -44,22 +44,25 @@ async function Login(req, res) {
 	}
 }
 
+
+const regiseterSchema = Joi.object({
+	role: Joi.string().valid('USER','ADMIN','SUPER_ADMIN'),
+	username: Joi.string().min(5).max(8).required(),
+	email: Joi.string().email().required(),
+	password: Joi.string()
+		.min(6)
+		.alphanum()
+		.pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
+		.required(),
+});
+
+
 //admin register controller
 async function Register(req, res) {
 	//creating a validation schema for Joi to validate
-	console.log(req.body);
-	const schema = Joi.object({
-		username: Joi.string().min(5).max(8).required(),
-		email: Joi.string().email().required(),
-		password: Joi.string()
-			.min(6)
-			.alphanum()
-			.pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
-			.required(),
-	});
-
+	console.log("body====>",req?.body);
 	//validating the schema
-	const { error } = await schema.validate(req.body);
+	const { error } = regiseterSchema.validate(req.body);
 	const err = error?.details[0]?.message;
 
 	//if the schema returns an error the code will stop here
@@ -71,6 +74,7 @@ async function Register(req, res) {
 	const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
 
 	const newAdmin = new adminModel({
+		role:req.body.role,
 		username: req.body.username,
 		email: req.body.email,
 		password: hashedPassword,
