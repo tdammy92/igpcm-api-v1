@@ -12,9 +12,14 @@ const db = mongoose.connection;
 
 db.on(
   "error",
-  console.error.bind(console, "DB was unable to connect connection error")
+  console.error.bind(console, "DB was unable to connect connection error 🛑")
 );
 
 db.once("open", function () {
-  console.log("Database is connected successfully");
+  console.log("Database is connected successfully 🚀");
+});
+
+
+db.on('disconnected', () => {
+  console.log('Disconnected from MongoDB ❌');
 });

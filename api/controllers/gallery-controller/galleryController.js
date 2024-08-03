@@ -156,7 +156,7 @@ async function deleteImage(req, res) {
       });
     }
 
-    return res.status(200).json({
+    return res.status(201).json({
       data: deleteResponse,
       message: "Image deleted successfully",
     });

@@ -20,22 +20,18 @@ async function Login(req, res) {
 		if (verifyPassword === false)
 			return res.status(304).send({message:"Invalid password"});
 
-		const token = await jwt.sign(
+		const token = jwt.sign(
 			{ _id: admin._id },
 			process.env.JWT_SECRET_KEY
 		);
 
 		admin.password = undefined;
+		const user = admin.toObject();
 
 		//send back  userDetails after login
+		const response = {...user,token}
 
-		return res.status(200).send({
-			data: {
-				...admin,
-			},
-
-			token,
-		});
+		return res.status(200).send(response);
 	} catch (error) {
 		console.log("error Login: " + error);
 		return res.status(500).send({
@@ -60,7 +56,7 @@ const regiseterSchema = Joi.object({
 //admin register controller
 async function Register(req, res) {
 	//creating a validation schema for Joi to validate
-	console.log("body====>",req?.body);
+	// console.log("body====>",req?.body);
 	//validating the schema
 	const { error } = regiseterSchema.validate(req.body);
 	const err = error?.details[0]?.message;

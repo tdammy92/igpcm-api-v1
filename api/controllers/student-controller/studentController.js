@@ -1,18 +1,32 @@
 const studentModel = require("../../Database/model/studentModel");
 const serialNumberModel = require("../../Database/model/serialnumberModel");
 const cloudinary = require("../../utils/cloudinary");
+const { PAGE_LIMIT } = require("../../utils");
 
 // get all student route
 async function getAllStudent(req, res) {
-  // console.log("this code ran");
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || PAGE_LIMIT;
+
 
   try {
-    // const response = await  studentModel.find({}).populate('user');
-    const response = await studentModel.find({}).sort({ createdAt: -1 });
 
-    // const notes = response.map((note)=>{
-    // 	return {...note,user:{password:undefined,token:undefined}}
-    // })
+    const startIndex = (page - 1) * limit;
+    const total = await studentModel.countDocuments();
+
+    // const response = await  studentModel.find({}).populate('user');
+    const result = await studentModel.find({}).sort({ createdAt: -1 }).skip(startIndex).limit(limit);
+
+    const response = {
+      page:result,
+      meta:{
+        currentPage:page,
+        pageLimit:limit,
+        total:total,
+        totalPages: Math.ceil(total / limit),
+      }
+    }
 
     return res.send(response);
   } catch (error) {
@@ -27,10 +41,10 @@ async function getAllStudent(req, res) {
 async function getRecentStudent(req, res) {
   try {
     // const response = await  studentModel.find({}).populate('user');
-    const response = await studentModel.find({}).sort({ createdAt: -1 });
-    const recent = response?.slice(0, 5);
+    const response = await studentModel.find({}).sort({ createdAt: -1 }).limit(5);
+    // const recent = response?.slice(0, 5);
 
-    return res.send(recent);
+    return res.send(response);
   } catch (error) {
     return res.status(500).json({
       message: "Somthing went wrong",
