@@ -5,28 +5,29 @@ const { PAGE_LIMIT } = require("../../utils");
 
 // get all student route
 async function getAllStudent(req, res) {
-
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || PAGE_LIMIT;
 
-
   try {
-
     const startIndex = (page - 1) * limit;
     const total = await studentModel.countDocuments();
 
     // const response = await  studentModel.find({}).populate('user');
-    const result = await studentModel.find({}).sort({ createdAt: -1 }).skip(startIndex).limit(limit);
+    const result = await studentModel
+      .find({})
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(limit);
 
     const response = {
-      page:result,
-      meta:{
-        currentPage:page,
-        pageLimit:limit,
-        total:total,
+      page: result,
+      meta: {
+        currentPage: page,
+        pageLimit: limit,
+        total: total,
         totalPages: Math.ceil(total / limit),
-      }
-    }
+      },
+    };
 
     return res.send(response);
   } catch (error) {
@@ -41,7 +42,10 @@ async function getAllStudent(req, res) {
 async function getRecentStudent(req, res) {
   try {
     // const response = await  studentModel.find({}).populate('user');
-    const response = await studentModel.find({}).sort({ createdAt: -1 }).limit(5);
+    const response = await studentModel
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(5);
     // const recent = response?.slice(0, 5);
 
     return res.send(response);
@@ -101,11 +105,15 @@ async function getStudentById(req, res) {
 async function studentRegistration(req, res) {
   const payload = req.body;
 
-  // const { image_data, documents, ...rest } = payload;
-
-  // console.log("full payload from front end", JSON.stringify(rest, null, 2));
-
   try {
+    //check if user email is  already registered:
+    const existingUser = await studentModel.findOne({ email: payload.email });
+
+    if (existingUser) {
+      //if user exist throw error
+      throw new Error("email already in use");
+    }
+
     const passport = payload?.image_data;
 
     //check if passport was included in the object
