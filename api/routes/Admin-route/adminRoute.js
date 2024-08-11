@@ -2,15 +2,13 @@ const express = require("express");
 const adminRouter = express.Router();
 
 
-const {Login,Register} = require('../../controllers')
+const {getCounts} = require('../../controllers');
+const verifyToken = require("../../middleware/verify");
 
-// console.log(Register);
-
-//Login routes
-adminRouter.post("/login",Login );
+//get all admin counts
+adminRouter.get("/count",verifyToken,getCounts);
 
 
 //Register routes
-adminRouter.post("/register",Register);
 
 module.exports = adminRouter;

@@ -13,6 +13,7 @@ const {
   galleryRouter,
   examRouter,
   resultRouter,
+  authRouter,
 } = require("./api/routes");
 
 require("./api/Database/DB");
@@ -32,7 +33,8 @@ server.get("/api", (req, res) => {
   res.send("welcome to igpcm api/v1");
 });
 
-server.use("/api/auth", adminRouter);
+server.use("/api/auth", authRouter);
+server.use("/api/admin", adminRouter);
 server.use("/api/student", studentRouter);
 server.use("/api/serial", serialNumberRoute);
 server.use("/api/gallery", galleryRouter);

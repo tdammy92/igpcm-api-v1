@@ -1,4 +1,5 @@
-const { Login, Register } = require("./Admin-controller/adminController");
+const { Login, Register} = require("./auth-controller/authController");
+const {getCounts} =require("./Admin-controller/adminController")
 const {
   getAllserialNumber,
   generateSerialNumber,
@@ -57,4 +58,5 @@ module.exports = {
   getResultById,
   UploadResult,
   deleteResultById,
+  getCounts
 };
