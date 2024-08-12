@@ -10,7 +10,6 @@ async function getExamsById(req, res) {
       .populate({ path: "uploadedBy", select: ["email", "username"] })
       .sort({ createdAt: -1 });
 
-
     //filter out answers, send only question to front end
     const exams = response?.map((exam) => ({
       exam_uuid: exam._id,
@@ -27,8 +26,6 @@ async function getExamsById(req, res) {
         };
       }),
     }));
-
-
 
     // console.log("List of all exams", JSON.stringify(exams, null, 3));
 
@@ -40,16 +37,14 @@ async function getExamsById(req, res) {
   }
 }
 
-
 async function getAllExams(req, res) {
   const type = req.query?.type;
   try {
-    // console.log("Exam is populated", examModel.populated("Admin"));
     const response = await examModel
       .find({})
       .populate({ path: "uploadedBy", select: ["email", "username"] })
+      .select("-questions")
       .sort({ createdAt: -1 });
-
 
     //filter out answers, send only question to front end
     const exams = response?.map((exam) => ({
@@ -59,18 +54,9 @@ async function getAllExams(req, res) {
       createdAt: exam.updatedAt,
       updatedAt: exam.updatedAt,
       ...(type === "full" && { uploadedBy: exam.uploadedBy }),
-      questions: exam?.questions?.map((qty) => {
-        return {
-          question: qty.question,
-          options: qty.options,
-          question_id: qty._id,
-        };
-      }),
     }));
 
 
-
-    // console.log("List of all exams", JSON.stringify(exams, null, 3));
 
     return res.status(200).json(exams);
   } catch (error) {

@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const examSchema = new mongoose.Schema(
   {
-    examName: { type: String, required: true, unique: true },
+    examName: { type: String, required: true},
+    examCode: { type: String, required: true, unique: true },
     duration: { type: Number, required: true },
     totalQuestions: { type: Number },
     questions: [
