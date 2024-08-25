@@ -1,35 +1,14 @@
 const examModel = require("../../Database/model/examsModel");
 
 // get all exams
-async function getExamsById(req, res) {
-  const type = req.query?.type;
+async function getExamById(req, res) {
+  const id = req?.params?.id;
   try {
-    // console.log("Exam is populated", examModel.populated("Admin"));
     const response = await examModel
-      .find({})
-      .populate({ path: "uploadedBy", select: ["email", "username"] })
-      .sort({ createdAt: -1 });
+      .findById(id)
+      .populate({ path: "uploadedBy", select: ["email", "username"] });
 
-    //filter out answers, send only question to front end
-    const exams = response?.map((exam) => ({
-      exam_uuid: exam._id,
-      name: exam.examName,
-      duration: exam.duration,
-      createdAt: exam.updatedAt,
-      updatedAt: exam.updatedAt,
-      ...(type === "full" && { uploadedBy: exam.uploadedBy }),
-      questions: exam?.questions?.map((qty) => {
-        return {
-          question: qty.question,
-          options: qty.options,
-          question_id: qty._id,
-        };
-      }),
-    }));
-
-    // console.log("List of all exams", JSON.stringify(exams, null, 3));
-
-    return res.status(200).json(exams);
+    return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
       message: error,
@@ -42,23 +21,11 @@ async function getAllExams(req, res) {
   try {
     const response = await examModel
       .find({})
-      .populate({ path: "uploadedBy", select: ["email", "username"] })
+      .populate(type === "full" ? { path: "uploadedBy", select: ["email", "username"] }:null)
       .select("-questions")
       .sort({ createdAt: -1 });
 
-    //filter out answers, send only question to front end
-    const exams = response?.map((exam) => ({
-      exam_uuid: exam._id,
-      name: exam.examName,
-      duration: exam.duration,
-      createdAt: exam.updatedAt,
-      updatedAt: exam.updatedAt,
-      ...(type === "full" && { uploadedBy: exam.uploadedBy }),
-    }));
-
-
-
-    return res.status(200).json(exams);
+    return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
       message: error,
@@ -110,4 +77,4 @@ async function deleteExams(req, res) {
   }
 }
 
-module.exports = { getAllExams, uploadExams, deleteExams };
+module.exports = {getExamById, getAllExams, uploadExams, deleteExams };

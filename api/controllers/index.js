@@ -23,6 +23,7 @@ const {
 } = require("./gallery-controller/galleryController");
 
 const {
+  getExamById,
   getAllExams,
   uploadExams,
   deleteExams,
@@ -51,6 +52,7 @@ module.exports = {
   getAllImages,
   uploadImage,
   deleteImage,
+  getExamById,
   getAllExams,
   uploadExams,
   deleteExams,
