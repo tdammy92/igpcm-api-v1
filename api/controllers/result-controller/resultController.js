@@ -14,7 +14,7 @@ async function getAllResults(req, res) {
       })
       .sort({ createdAt: -1 });
 
-    console.log("List of all results", JSON.stringify(response, null, 3));
+    // console.log("List of all results", JSON.stringify(response, null, 3));
 
     return res.status(200).json(response);
   } catch (error) {

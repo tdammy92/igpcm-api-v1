@@ -14,6 +14,8 @@ const {
   examRouter,
   resultRouter,
   authRouter,
+  courseRouter,
+  certificateRouter
 } = require("./api/routes");
 
 require("./api/Database/DB");
@@ -40,6 +42,8 @@ server.use("/api/serial", serialNumberRoute);
 server.use("/api/gallery", galleryRouter);
 server.use("/api/exams", examRouter);
 server.use("/api/result", resultRouter);
+server.use("/api/course", courseRouter);
+server.use("/api/certificate", certificateRouter);
 
 server.listen(port, () => {
   // console.log("APP ENVIREMOENT", process.argv);

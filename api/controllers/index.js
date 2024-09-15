@@ -1,10 +1,11 @@
-const { Login, Register} = require("./auth-controller/authController");
-const {getCounts} =require("./Admin-controller/adminController")
+const { Login, Register } = require("./auth-controller/authController");
+const { getCounts } = require("./Admin-controller/adminController");
 const {
   getAllserialNumber,
   generateSerialNumber,
   getTotalSerialNumberCount,
   updateSerialNumber,
+  validateSerialNumber
 } = require("./serialNumber-Controller/serialNumberController");
 
 const {
@@ -30,11 +31,28 @@ const {
 } = require("./exam-controller/examController");
 
 const {
+  getAllCourses,
+  getCourseById,
+  createCourse,
+  deleteCourseById,
+} = require("./course-controller");
+
+const {
   getAllResults,
   getResultById,
   UploadResult,
   deleteResultById,
 } = require("./result-controller/resultController");
+
+
+const {
+  getAllCertificate,
+  createCertificate,
+deleteCertificateById
+} = require("./certificate-controller");
+
+
+
 
 module.exports = {
   Login,
@@ -48,6 +66,7 @@ module.exports = {
   getTotalSerialNumberCount,
   generateSerialNumber,
   updateSerialNumber,
+  validateSerialNumber,
   getRecentStudent,
   getAllImages,
   uploadImage,
@@ -60,5 +79,12 @@ module.exports = {
   getResultById,
   UploadResult,
   deleteResultById,
-  getCounts
+  getCounts,
+  getAllCourses,
+  getCourseById,
+  createCourse,
+  deleteCourseById,
+  getAllCertificate,
+  createCertificate,
+deleteCertificateById
 };

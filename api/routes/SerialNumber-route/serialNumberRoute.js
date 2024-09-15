@@ -8,12 +8,13 @@ const {
 	generateSerialNumber,
 	getTotalSerialNumberCount,
 	updateSerialNumber,
+	validateSerialNumber
 } = require("../../controllers");
 
 //get all student route
 serialNumberRouter.get("/", verifyToken, getAllserialNumber);
 serialNumberRouter.get("/count", verifyToken, getTotalSerialNumberCount);
-
+serialNumberRouter.get("/validate", validateSerialNumber);
 //resgister student route
 // serialNumberRouter.post("/",verifyToken,uploadImage, studentRegistration);
 serialNumberRouter.post("/generate", verifyToken, generateSerialNumber);
