@@ -5,6 +5,8 @@ const galleryRouter = require("./gallery-route/galleryRoute");
 const examRouter = require("./exam-route/examRoute");
 const resultRouter = require("./result-route/resultRoute");
 const authRouter = require("./auth-route/authRoute");
+const courseRouter = require('./course-route')
+const certificateRouter = require('./ceritificate-route')
 
 module.exports = {
   authRouter,
@@ -14,4 +16,6 @@ module.exports = {
   galleryRouter,
   examRouter,
   resultRouter,
+  courseRouter,
+  certificateRouter
 };

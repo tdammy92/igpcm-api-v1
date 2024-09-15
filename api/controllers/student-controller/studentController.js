@@ -94,7 +94,7 @@ async function getStudentById(req, res) {
       });
     }
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
     return res.status(400).json({
       status: "failure",
       message: "Somthing went wrong",
@@ -208,7 +208,7 @@ async function studentRegistration(req, res) {
 
     const updatedSerialNumb = await serialNumberModel.updateOne(
       { _id: newRegistration?.serialNumber },
-      { isValid: false, user: newRegistration?._id, dateUsed: Date.now() }
+      { isValid: false, user: newRegistration?._id, dateUsed: Date.now(), userType: "Student", }
     );
 
     if (!updatedSerialNumb)
@@ -218,7 +218,7 @@ async function studentRegistration(req, res) {
 
     return res.status(201).json(newRegistration);
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
     return res.status(400).json({
       status: "failure",
       message: "user registration failed",
@@ -234,7 +234,7 @@ async function deleteStudent(req, res) {
     const deletedImages = await cloudinary.api.delete_resources(
       cloudinaryPublicIds,
       function (error, result) {
-        console.log(result, error);
+        // console.log(result, error);
       }
     );
     //remove the image from MongoDB
