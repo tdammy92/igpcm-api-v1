@@ -6,9 +6,10 @@ const serialnumberSchema = new mongoose.Schema(
 		dateGenerated: { type:Date,default:Date.now()},
         dateUsed:{type:Date},
 		isValid: {type:Boolean,default:true},
+		userType: { type: String, enum: ['Student', 'Certificate'] },
         user:{
             type: mongoose.Schema.Types.ObjectId,
-			ref: "Student",
+			refPath: 'userType'
         }
 	},
 	{ timestamps: true }
