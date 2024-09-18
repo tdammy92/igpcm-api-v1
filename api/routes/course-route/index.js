@@ -4,6 +4,7 @@ const {
   getCourseById,
   createCourse,
   deleteCourseById,
+  updateCourseName
 } = require("../../controllers");
 const courseRouter = express.Router();
 const verifyToken = require("../../middleware/verify");
@@ -16,6 +17,10 @@ courseRouter.get("/:id", getCourseById);
 
 //post/submit result by Id
 courseRouter.post("/create",verifyToken, createCourse);
+
+
+//post/submit result by Id
+courseRouter.patch("/update-course",verifyToken, updateCourseName);
 
 //delete result by Id
 courseRouter.delete("/:id", verifyToken, deleteCourseById);
