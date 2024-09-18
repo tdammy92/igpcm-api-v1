@@ -4,10 +4,10 @@ const courseSchema = new mongoose.Schema(
   {
     courseTitle: { type: String, required: true,unique: true},
     courseDescription: { type: String,},
-    exam: {
+    exams: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Exam",
-      },
+      }],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Admin",
