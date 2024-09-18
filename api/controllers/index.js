@@ -34,6 +34,7 @@ const {
   getAllCourses,
   getCourseById,
   createCourse,
+  updateCourseName,
   deleteCourseById,
 } = require("./course-controller");
 
@@ -86,5 +87,6 @@ module.exports = {
   deleteCourseById,
   getAllCertificate,
   createCertificate,
-deleteCertificateById
+deleteCertificateById,
+updateCourseName
 };
