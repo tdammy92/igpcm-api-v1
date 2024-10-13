@@ -1,3 +1,4 @@
+const adminModel = require("../../Database/model/adminModel");
 const certificateModel = require("../../Database/model/certificateModel");
 const serialNumberModel = require("../../Database/model/serialnumberModel");
 
@@ -24,6 +25,19 @@ async function createCertificate(req, res) {
   const payload = await req.body;
 
   try {
+    //check if certificate doesnt not exist
+    const checkCertificate = await certificateModel
+      .where({
+        studentName: payload?.studentName,
+        selectedCourse: payload?.selectedCourse,
+      })
+      .findOne();
+
+    //if certificate already exist return
+    if (checkCertificate) {
+      throw new Error("certificate has already been created");
+    }
+
     //get serial number id;
     const querySerial = payload?.serialNumber;
     const serialQ = serialNumberModel.where({ serial: querySerial });
@@ -34,6 +48,7 @@ async function createCertificate(req, res) {
       ...payload,
       serialNumber: serial?._id,
     };
+
     //save certificate
     const result = new certificateModel(uploadData);
     const response = await result.save();
@@ -66,15 +81,38 @@ async function createCertificate(req, res) {
 
 //delete a result
 async function deleteCertificateById(req, res) {
-  const course = req.body?.courseId;
+  const certificateId = req.params?.id;
+  const profileId = req.body?.profileId;
+
   try {
-    //remove the image from MongoDB
+        //check if certificate doesnt not exist
+        const checkIsSuperAdmin = await adminModel
+        .where({
+          _id: profileId,
+          role: 'SUPER_ADMIN',
+        })
+        .findOne();
+  
+    
+      if (!checkIsSuperAdmin) {
+        throw new Error("Authorization failed");
+      }
+
+    //remove certificate
     const deleteResponse = await certificateModel.findOneAndDelete({
-      _id: course,
+      _id: certificateId,
     });
-    return deleteResponse.status(201).json({
+
+
+    // if certificate is not found return
+    if (!deleteResponse) {
+      throw new Error("could not delete certficate");
+    }
+
+    return res.status(201).json({
       data: "Certificate deleted",
     });
+
   } catch (error) {
     return res.status(500).json({
       message: "could not delete certficate",
